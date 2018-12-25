@@ -1,0 +1,13 @@
+import SquareInterface from "../Interfaces/SquareInterface";
+import BishopApi from "./Bishop";
+import RockApi from "./Rock";
+
+export default class RocktApi {
+    //возможные ходы для ладьи
+    static calcPossibleTurns(table: SquareInterface[], figure: number, position: number): number[] {
+        const figureSide = Math.sign(figure);
+        let possibleTurnes: number[] = [...BishopApi.calcPossibleTurns(table, figure, position), ...RockApi.calcPossibleTurns(table, figure, position)];
+
+        return possibleTurnes;
+    }
+}
