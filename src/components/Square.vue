@@ -38,13 +38,12 @@ export default Vue.extend({
         isWhiteTurn: {
             type: Boolean,
             default: true,
-        }
-    },
+        },
 
-    data() {
-        return {
-            
-        };
+        playableSquare: {
+            type: Boolean,
+            default: true,
+        }
     },
 
     computed: {
@@ -69,6 +68,11 @@ export default Vue.extend({
 
     methods: {
         startOfEndTurn(event: any): void {
+            if (!this.playableSquare) {
+                this.$emit('figure-picker', this.state);
+                return;
+            }
+
             if (event.target.closest('.possibleTurn')) {
                 this.$emit('figure-turned', this.numberOfField);
                 return;

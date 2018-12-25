@@ -1,5 +1,42 @@
 <template>
     <div class="chess-table">
+        <div class="super-pawn-menu_white" v-if="whitePawnPromotion">
+            <square :state="3" :background-color="`#cf7249`" 
+                :playable-square="false"
+                @figure-picker="chessFieldModel[pawnForPromotionPosition].figure = $event"
+            ></square>
+            <square :state="4" :background-color="`#cf7249`"
+                :playable-square="false"
+                @figure-picker="chessFieldModel[pawnForPromotionPosition].figure = $event"
+            ></square>
+            <square :state="5" :background-color="`#cf7249`" 
+                :playable-square="false"
+                @figure-picker="chessFieldModel[pawnForPromotionPosition].figure = $event"
+            ></square>
+            <square :state="6" :background-color="`#cf7249`" 
+                :playable-square="false"
+                @figure-picker="chessFieldModel[pawnForPromotionPosition].figure = $event"
+            ></square>
+        </div>
+        <div class="super-pawn-menu_black" v-if="blackPawnPromotion">
+            <square :state="-3" :background-color="`#ffeece`"
+                :playable-square="false"
+                @figure-picker="chessFieldModel[pawnForPromotionPosition].figure = $event"
+            ></square>
+            <square :state="-4" :background-color="`#ffeece`"
+                :playable-square="false"
+                @figure-picker="chessFieldModel[pawnForPromotionPosition].figure = $event"
+            ></square>
+            <square :state="-5" :background-color="`#ffeece`"
+                :playable-square="false"
+                @figure-picker="chessFieldModel[pawnForPromotionPosition].figure = $event"
+            ></square>
+            <square :state="-6" :background-color="`#ffeece`"
+                :playable-square="false"
+                @figure-picker="chessFieldModel[pawnForPromotionPosition].figure = $event"
+            ></square>
+        </div>
+        <div class="play-stoper" v-if="whitePawnPromotion || blackPawnPromotion"></div>
         <square v-for="(item, index) in chessFieldModel" :key="index"
             :number-of-field="index"
             :background-color="item.squareColor"
@@ -40,6 +77,7 @@ export default Vue.extend({
             isWhiteTurn: true as boolean,
             allFieldsUnderWhiteAttack: [] as number[],
             allFieldsUnderBlackAttack: [] as number[],
+            pawnForPromotionPosition: null as number | null,
         };
     },
 
@@ -56,7 +94,31 @@ export default Vue.extend({
             
             if (this.allFieldsUnderWhiteAttack.indexOf(blackKingPosition) !== -1) return true;
             return false;
-        }
+        },
+
+        whitePawnPromotion(): boolean {
+            for (let i = 0; i < 8; i += 1) {
+                if (this.chessFieldModel[i].figure === 1) {
+                    this.pawnForPromotionPosition = i;
+                    return true;
+                }
+            }
+
+            this.pawnForPromotionPosition = null;
+            return false;
+        },
+
+        blackPawnPromotion(): boolean {
+            for (let i = 56; i < 64; i += 1) {
+                if (this.chessFieldModel[i].figure === -1) {
+                    this.pawnForPromotionPosition = i;
+                    return true;
+                }
+            }
+
+            this.pawnForPromotionPosition = null;
+            return false;
+        },
     },
 
     methods: {
@@ -105,6 +167,8 @@ export default Vue.extend({
         },
 
         endOfTurn(event: number): void {
+            const figureAtPoint: number | null | undefined = this.chessFieldModel[event].figure;
+
             this.chessFieldModel[this.activeSquare as number].figure = 0;
             this.chessFieldModel[event].figure = this.activeFigure;
 
@@ -115,12 +179,12 @@ export default Vue.extend({
 
             if (this.isWhiteTurn && this.whiteUnderCheck) {
                 this.chessFieldModel[this.activeSquare as number].figure = this.activeFigure;
-                this.chessFieldModel[event].figure = 0;
+                this.chessFieldModel[event].figure = figureAtPoint;
                 return;
             }
             if (!this.isWhiteTurn && this.blackUnderCheck) {
                 this.chessFieldModel[this.activeSquare as number].figure = this.activeFigure;
-                this.chessFieldModel[event].figure = 0;
+                this.chessFieldModel[event].figure = figureAtPoint;
                 return;
             } 
 
@@ -180,10 +244,45 @@ export default Vue.extend({
 </script>
 <style>
 .chess-table {
+    position: relative;
     width: calc(8 * 70px);
     height: calc(8 * 70px);
     display: flex;
     flex-wrap: wrap;
     border: 10px solid #49290c
+}
+
+.super-pawn-menu_white {
+    position: absolute;
+    top: -10px;
+    right: calc(100% + 10px);
+    width: 140px;
+    height: 140px;
+    border: 10px solid #49290c;
+    border-width: 10px 0 10px 10px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.super-pawn-menu_black {
+    position: absolute;
+    bottom: -10px;
+    left: calc(100% + 10px);
+    width: 140px;
+    height: 140px;
+    border: 10px solid #49290c;
+    border-width: 10px 10px 10px 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.play-stoper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    background-color: #3333338c;
 }
 </style>
