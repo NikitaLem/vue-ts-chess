@@ -3,37 +3,37 @@
         <div class="super-pawn-menu_white" v-if="whitePawnPromotion">
             <square :state="3" :background-color="`#cf7249`" 
                 :playable-square="false"
-                @figure-picker="chessFieldModel[pawnForPromotionPosition].figure = $event"
+                @figure-picker="completePawnPropogation($event)"
             ></square>
             <square :state="4" :background-color="`#cf7249`"
                 :playable-square="false"
-                @figure-picker="chessFieldModel[pawnForPromotionPosition].figure = $event"
+                @figure-picker="completePawnPropogation($event)"
             ></square>
             <square :state="5" :background-color="`#cf7249`" 
                 :playable-square="false"
-                @figure-picker="chessFieldModel[pawnForPromotionPosition].figure = $event"
+                @figure-picker="completePawnPropogation($event)"
             ></square>
             <square :state="6" :background-color="`#cf7249`" 
                 :playable-square="false"
-                @figure-picker="chessFieldModel[pawnForPromotionPosition].figure = $event"
+                @figure-picker="completePawnPropogation($event)"
             ></square>
         </div>
         <div class="super-pawn-menu_black" v-if="blackPawnPromotion">
             <square :state="-3" :background-color="`#ffeece`"
                 :playable-square="false"
-                @figure-picker="chessFieldModel[pawnForPromotionPosition].figure = $event"
+                @figure-picker="completePawnPropogation($event)"
             ></square>
             <square :state="-4" :background-color="`#ffeece`"
                 :playable-square="false"
-                @figure-picker="chessFieldModel[pawnForPromotionPosition].figure = $event"
+                @figure-picker="completePawnPropogation($event)"
             ></square>
             <square :state="-5" :background-color="`#ffeece`"
                 :playable-square="false"
-                @figure-picker="chessFieldModel[pawnForPromotionPosition].figure = $event"
+                @figure-picker="completePawnPropogation($event)"
             ></square>
             <square :state="-6" :background-color="`#ffeece`"
                 :playable-square="false"
-                @figure-picker="chessFieldModel[pawnForPromotionPosition].figure = $event"
+                @figure-picker="completePawnPropogation($event)"
             ></square>
         </div>
         <div class="play-stoper" v-if="whitePawnPromotion || blackPawnPromotion"></div>
@@ -74,10 +74,20 @@ export default Vue.extend({
             activeFigure: null as number | null | undefined,
             activeSquare: null as number | null,
             possibleTurnes: [] as number[],
+
             isWhiteTurn: true as boolean,
+
             allFieldsUnderWhiteAttack: [] as number[],
             allFieldsUnderBlackAttack: [] as number[],
+
             pawnForPromotionPosition: null as number | null,
+
+            castling: {
+                isWhiteShortCastlingEverPossible: true as boolean,
+                isWhiteLongCastlingEverPossible: true as boolean,
+                isBlackShortCastlingEverPossible: true as boolean,
+                isBlackLongCastlingEverPossible: true as boolean,
+            },
         };
     },
 
@@ -119,6 +129,50 @@ export default Vue.extend({
             this.pawnForPromotionPosition = null;
             return false;
         },
+
+        whiteShortCastling(): boolean {
+            if (this.castling.isWhiteShortCastlingEverPossible)
+                if (this.allFieldsUnderBlackAttack.indexOf(61) === -1 && 
+                    this.allFieldsUnderBlackAttack.indexOf(62) === -1 &&
+                    this.chessFieldModel[61].figure === 0 &&
+                    this.chessFieldModel[62].figure === 0) return true;
+
+            return false;
+        },
+
+        blackShortCastling(): boolean {
+            if (this.castling.isBlackShortCastlingEverPossible)
+                if (this.allFieldsUnderWhiteAttack.indexOf(5) === -1 && 
+                    this.allFieldsUnderWhiteAttack.indexOf(6) === -1 &&
+                    this.chessFieldModel[5].figure === 0 &&
+                    this.chessFieldModel[6].figure === 0) return true;
+
+            return false;
+        },
+
+        whiteLongCastling(): boolean {
+            if (this.castling.isWhiteLongCastlingEverPossible)
+                if (this.allFieldsUnderBlackAttack.indexOf(57) === -1 && 
+                    this.allFieldsUnderBlackAttack.indexOf(58) === -1 &&
+                    this.allFieldsUnderBlackAttack.indexOf(59) === -1 &&
+                    this.chessFieldModel[57].figure === 0 &&
+                    this.chessFieldModel[58].figure === 0 &&
+                    this.chessFieldModel[59].figure === 0) return true;
+
+            return false;
+        },
+
+        blackLongCastling(): boolean {
+            if (this.castling.isBlackLongCastlingEverPossible)
+                if (this.allFieldsUnderWhiteAttack.indexOf(1) === -1 && 
+                    this.allFieldsUnderWhiteAttack.indexOf(2) === -1 &&
+                    this.allFieldsUnderWhiteAttack.indexOf(3) === -1 &&
+                    this.chessFieldModel[1].figure === 0 &&
+                    this.chessFieldModel[2].figure === 0 &&
+                    this.chessFieldModel[3].figure === 0) return true;
+
+            return false;
+        },
     },
 
     methods: {
@@ -140,8 +194,11 @@ export default Vue.extend({
                     case -1: case 1: 
                         this.possibleTurnes = PawnApi.calcPossibleTurns(this.chessFieldModel, this.activeFigure, this.activeSquare);
                         break;
-                    case -2: case 2: 
-                        this.possibleTurnes = KingApi.calcPossibleTurns(this.chessFieldModel, this.activeFigure, this.activeSquare);
+                    case -2:
+                        this.possibleTurnes = KingApi.calcPossibleTurns(this.chessFieldModel, this.activeFigure, this.activeSquare, this.blackShortCastling, this.blackLongCastling);
+                        break;
+                    case 2: 
+                        this.possibleTurnes = KingApi.calcPossibleTurns(this.chessFieldModel, this.activeFigure, this.activeSquare, this.whiteShortCastling, this.whiteLongCastling);
                         break;
                     case -3: case 3:
                         this.possibleTurnes = QueenApi.calcPossibleTurns(this.chessFieldModel, this.activeFigure, this.activeSquare);
@@ -167,6 +224,26 @@ export default Vue.extend({
         },
 
         endOfTurn(event: number): void {
+            if (this.activeFigure === 2 && event === 62) {
+                this.chessFieldModel[63].figure = 0;
+                this.chessFieldModel[61].figure = 6;
+            }
+
+            if (this.activeFigure === 2 && event === 57) {
+                this.chessFieldModel[56].figure = 0;
+                this.chessFieldModel[58].figure = 6;
+            }
+
+            if (this.activeFigure === -2 && event === 6) {
+                this.chessFieldModel[7].figure = 0;
+                this.chessFieldModel[5].figure = -6;
+            }
+
+            if (this.activeFigure === -2 && event === 1) {
+                this.chessFieldModel[0].figure = 0;
+                this.chessFieldModel[2].figure = -6;
+            }
+
             const figureAtPoint: number | null | undefined = this.chessFieldModel[event].figure;
 
             this.chessFieldModel[this.activeSquare as number].figure = 0;
@@ -188,14 +265,12 @@ export default Vue.extend({
                 return;
             } 
 
-            this.activeSquare = null;
-            this.activeFigure = null;
-            this.chessFieldModel.forEach(item => {
-                item.possibleTurn = false;
-                item.isActive = false;
-            });
+            if (this.castling.isWhiteShortCastlingEverPossible) this.checkCastling(1, 'short');
+            if (this.castling.isWhiteLongCastlingEverPossible) this.checkCastling(1, 'long');
+            if (this.castling.isBlackShortCastlingEverPossible) this.checkCastling(-1, 'short');
+            if (this.castling.isBlackLongCastlingEverPossible) this.checkCastling(-1, 'long');
 
-            this.isFigureActive = false;
+            this.clearTableAfterTurn();
             this.isWhiteTurn = !this.isWhiteTurn;
         },
 
@@ -216,7 +291,7 @@ export default Vue.extend({
 
             let pawnsPositions: number[] = [];
             let kingPosition: number = 0;
-            let queenPosition: number = 0;
+            let queenPositions: number[] = [];
             let bishopsPositions: number[] = [];
             let knightsPositions: number[] = [];
             let rocksPositions: number[] = [];
@@ -224,7 +299,7 @@ export default Vue.extend({
             this.chessFieldModel.forEach((item, index) => {
                 if (item.figure === side * 1) pawnsPositions.push(index);
                 if (item.figure === side * 2) kingPosition = index;
-                if (item.figure === side * 3) queenPosition = index;
+                if (item.figure === side * 3) queenPositions.push(index);
                 if (item.figure === side * 4) bishopsPositions.push(index);
                 if (item.figure === side * 5) knightsPositions.push(index);
                 if (item.figure === side * 6) rocksPositions.push(index);
@@ -232,13 +307,40 @@ export default Vue.extend({
 
             pawnsPositions.forEach(item => fieldsUnderAttack.push(...PawnApi.calcAttackedFields(this.chessFieldModel, side * 1, item)));
             fieldsUnderAttack.push(...KingApi.calcPossibleTurns(this.chessFieldModel, side * 2, kingPosition));
-            fieldsUnderAttack.push(...QueenApi.calcPossibleTurns(this.chessFieldModel, side * 3, queenPosition));
+            queenPositions.forEach(item => fieldsUnderAttack.push(...QueenApi.calcPossibleTurns(this.chessFieldModel, side * 3, item)));
             bishopsPositions.forEach(item => fieldsUnderAttack.push(...BishopApi.calcPossibleTurns(this.chessFieldModel, side * 4, item)));
             knightsPositions.forEach(item => fieldsUnderAttack.push(...KnightApi.calcPossibleTurns(this.chessFieldModel, side * 5, item)));
             rocksPositions.forEach(item => fieldsUnderAttack.push(...RockApi.calcPossibleTurns(this.chessFieldModel, side * 6, item)));
 
             return fieldsUnderAttack;
         },
+
+        completePawnPropogation(event: number): void {
+            this.chessFieldModel[<number>this.pawnForPromotionPosition].figure = event;
+            this.allFieldsUnderWhiteAttack.splice(0, this.allFieldsUnderWhiteAttack.length);
+            this.allFieldsUnderWhiteAttack = this.getFieldsUnderAttack(1);
+            this.allFieldsUnderBlackAttack.splice(0, this.allFieldsUnderBlackAttack.length);
+            this.allFieldsUnderBlackAttack = this.getFieldsUnderAttack(-1);
+        },
+
+        checkCastling(side: number, type: string): void {
+            if (side > 0)
+                switch (type) {
+                    default:
+                    case 'short':
+                        if (this.chessFieldModel[60].figure !== 2 || this.chessFieldModel[63].figure !== 6) this.castling.isWhiteShortCastlingEverPossible = false; break;
+                    case 'long':
+                        if (this.chessFieldModel[60].figure !== 2 || this.chessFieldModel[56].figure !== 6) this.castling.isWhiteLongCastlingEverPossible = false; break;
+                }
+            else
+                switch (type) {
+                    default:
+                    case 'short':
+                        if (this.chessFieldModel[4].figure !== -2 || this.chessFieldModel[0].figure !== -6) this.castling.isBlackLongCastlingEverPossible = false; break;
+                    case 'long':
+                        if (this.chessFieldModel[4].figure !== -2 || this.chessFieldModel[7].figure !== -6) this.castling.isBlackShortCastlingEverPossible = false; break;
+                }
+        }
     },
 })
 </script>

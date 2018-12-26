@@ -1,8 +1,8 @@
 import SquareInterface from "../Interfaces/SquareInterface";
 
-export default class RocktApi {
+export default class KingApi {
     //возможные ходы для ладьи
-    static calcPossibleTurns(table: SquareInterface[], figure: number, position: number): number[] {
+    static calcPossibleTurns(table: SquareInterface[], figure: number, position: number, castlingShort?: boolean, castlingLong?: boolean): number[] {
         const figureSide = Math.sign(figure);
         let possibleTurnes: number[] = [];
 
@@ -19,6 +19,9 @@ export default class RocktApi {
                 possibleTurnes.push(position + 8 * i - 1);
             }
         }
+
+        if (castlingShort) possibleTurnes.push(position + 2);
+        if (castlingLong) possibleTurnes.push(position - 3);
 
         return possibleTurnes;
     }
