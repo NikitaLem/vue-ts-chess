@@ -59,7 +59,9 @@ import BishopApi from '../FiguresApi/Bishop';
 import RockApi from '../FiguresApi/Rock';
 import QueenApi from '../FiguresApi/Queen';
 import KingApi from '../FiguresApi/King';
-import { startingTable } from './startingTable';
+import * as io from 'socket.io-client';
+
+const socket = io();
 
 export default Vue.extend({
     name: 'Table',
@@ -69,7 +71,7 @@ export default Vue.extend({
 
     data() {
         return {
-            chessFieldModel: startingTable as SquareInterface[],
+            chessFieldModel: [] as SquareInterface[],
             isFigureActive: false as boolean,
             activeFigure: null as number | null | undefined,
             activeSquare: null as number | null,
@@ -93,84 +95,113 @@ export default Vue.extend({
 
     computed: {
         whiteUnderCheck(): boolean {
-            const whiteKingPosition = this.chessFieldModel.findIndex(item => item.figure === 2);
-            
-            if (this.allFieldsUnderBlackAttack.indexOf(whiteKingPosition) !== -1) return true;
-            return false;
+            if (this.chessFieldModel.length > 0) {
+                const whiteKingPosition = this.chessFieldModel.findIndex(item => item.figure === 2);
+                
+                if (this.allFieldsUnderBlackAttack.indexOf(whiteKingPosition) !== -1) return true;
+                return false;
+            }
+
+            return false
         },
 
         blackUnderCheck(): boolean {
-            const blackKingPosition = this.chessFieldModel.findIndex(item => item.figure === -2);
-            
-            if (this.allFieldsUnderWhiteAttack.indexOf(blackKingPosition) !== -1) return true;
+            if (this.chessFieldModel.length > 0) {
+                const blackKingPosition = this.chessFieldModel.findIndex(item => item.figure === -2);
+                
+                if (this.allFieldsUnderWhiteAttack.indexOf(blackKingPosition) !== -1) return true;
+                return false;
+            }
+
             return false;
         },
 
         whitePawnPromotion(): boolean {
-            for (let i = 0; i < 8; i += 1) {
-                if (this.chessFieldModel[i].figure === 1) {
-                    this.pawnForPromotionPosition = i;
-                    return true;
+            if (this.chessFieldModel.length > 0) {
+                for (let i = 0; i < 8; i += 1) {
+                    if (this.chessFieldModel[i].figure === 1) {
+                        this.pawnForPromotionPosition = i;
+                        return true;
+                    }
                 }
+
+                this.pawnForPromotionPosition = null;
+                return false;
             }
 
-            this.pawnForPromotionPosition = null;
             return false;
         },
 
         blackPawnPromotion(): boolean {
-            for (let i = 56; i < 64; i += 1) {
-                if (this.chessFieldModel[i].figure === -1) {
-                    this.pawnForPromotionPosition = i;
-                    return true;
+            if (this.chessFieldModel.length > 0) {
+                for (let i = 56; i < 64; i += 1) {
+                    if (this.chessFieldModel[i].figure === -1) {
+                        this.pawnForPromotionPosition = i;
+                        return true;
+                    }
                 }
+
+                this.pawnForPromotionPosition = null;
+                return false;
             }
 
-            this.pawnForPromotionPosition = null;
             return false;
         },
 
         whiteShortCastling(): boolean {
-            if (this.castling.isWhiteShortCastlingEverPossible)
-                if (this.allFieldsUnderBlackAttack.indexOf(61) === -1 && 
-                    this.allFieldsUnderBlackAttack.indexOf(62) === -1 &&
-                    this.chessFieldModel[61].figure === 0 &&
-                    this.chessFieldModel[62].figure === 0) return true;
+            if (this.chessFieldModel.length > 0) {
+                if (this.castling.isWhiteShortCastlingEverPossible)
+                    if (this.allFieldsUnderBlackAttack.indexOf(61) === -1 && 
+                        this.allFieldsUnderBlackAttack.indexOf(62) === -1 &&
+                        this.chessFieldModel[61].figure === 0 &&
+                        this.chessFieldModel[62].figure === 0) return true;
+
+                return false;
+            }
 
             return false;
         },
 
         blackShortCastling(): boolean {
-            if (this.castling.isBlackShortCastlingEverPossible)
-                if (this.allFieldsUnderWhiteAttack.indexOf(5) === -1 && 
-                    this.allFieldsUnderWhiteAttack.indexOf(6) === -1 &&
-                    this.chessFieldModel[5].figure === 0 &&
-                    this.chessFieldModel[6].figure === 0) return true;
+            if (this.chessFieldModel.length > 0) {
+                if (this.castling.isBlackShortCastlingEverPossible)
+                    if (this.allFieldsUnderWhiteAttack.indexOf(5) === -1 && 
+                        this.allFieldsUnderWhiteAttack.indexOf(6) === -1 &&
+                        this.chessFieldModel[5].figure === 0 &&
+                        this.chessFieldModel[6].figure === 0) return true;
 
+                return false;
+            }
             return false;
         },
 
         whiteLongCastling(): boolean {
-            if (this.castling.isWhiteLongCastlingEverPossible)
-                if (this.allFieldsUnderBlackAttack.indexOf(57) === -1 && 
-                    this.allFieldsUnderBlackAttack.indexOf(58) === -1 &&
-                    this.allFieldsUnderBlackAttack.indexOf(59) === -1 &&
-                    this.chessFieldModel[57].figure === 0 &&
-                    this.chessFieldModel[58].figure === 0 &&
-                    this.chessFieldModel[59].figure === 0) return true;
+            if (this.chessFieldModel.length > 0) {
+                if (this.castling.isWhiteLongCastlingEverPossible)
+                    if (this.allFieldsUnderBlackAttack.indexOf(57) === -1 && 
+                        this.allFieldsUnderBlackAttack.indexOf(58) === -1 &&
+                        this.allFieldsUnderBlackAttack.indexOf(59) === -1 &&
+                        this.chessFieldModel[57].figure === 0 &&
+                        this.chessFieldModel[58].figure === 0 &&
+                        this.chessFieldModel[59].figure === 0) return true;
 
+                return false;
+            }
             return false;
         },
 
         blackLongCastling(): boolean {
-            if (this.castling.isBlackLongCastlingEverPossible)
-                if (this.allFieldsUnderWhiteAttack.indexOf(1) === -1 && 
-                    this.allFieldsUnderWhiteAttack.indexOf(2) === -1 &&
-                    this.allFieldsUnderWhiteAttack.indexOf(3) === -1 &&
-                    this.chessFieldModel[1].figure === 0 &&
-                    this.chessFieldModel[2].figure === 0 &&
-                    this.chessFieldModel[3].figure === 0) return true;
+            if (this.chessFieldModel.length > 0) {
+                if (this.castling.isBlackLongCastlingEverPossible)
+                    if (this.allFieldsUnderWhiteAttack.indexOf(1) === -1 && 
+                        this.allFieldsUnderWhiteAttack.indexOf(2) === -1 &&
+                        this.allFieldsUnderWhiteAttack.indexOf(3) === -1 &&
+                        this.chessFieldModel[1].figure === 0 &&
+                        this.chessFieldModel[2].figure === 0 &&
+                        this.chessFieldModel[3].figure === 0) return true;
 
+                return false;
+            }
             return false;
         },
     },
@@ -342,6 +373,14 @@ export default Vue.extend({
                 }
         }
     },
+
+    mounted() {
+        fetch('http://localhost:3000/getTable')
+            .then(response => {
+                return response.json();
+            })
+            .then(json => this.chessFieldModel = json);
+    }
 })
 </script>
 <style>
