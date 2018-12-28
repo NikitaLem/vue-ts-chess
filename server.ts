@@ -7,14 +7,12 @@ const http: Http2Server = require('http').Server(app);
 const io = require('socket.io')(http);
 const bodyParser = require('body-parser');
 
+let data = startingTable;
+
 app.use(express.static(__dirname + '/dist'));
 
-app.get('/getTable', (req, res) => {
-    res.json(startingTable);
-});
-
 io.on('connection', function(socket){
-    console.log('a user connected');
+    socket.emit('getData', data);
   });
 
 http.listen(3000);

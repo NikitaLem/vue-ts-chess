@@ -6,11 +6,9 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
+var data = startingTable_1.startingTable;
 app.use(express.static(__dirname + '/dist'));
-app.get('/getTable', function (req, res) {
-    res.json(startingTable_1.startingTable);
-});
 io.on('connection', function (socket) {
-    console.log('a user connected');
+    socket.emit('getData', data);
 });
 http.listen(3000);

@@ -375,11 +375,9 @@ export default Vue.extend({
     },
 
     mounted() {
-        fetch('http://localhost:3000/getTable')
-            .then(response => {
-                return response.json();
-            })
-            .then(json => this.chessFieldModel = json);
+            socket.on('getData', (data: SquareInterface[]) => {
+                this.chessFieldModel = data;
+            });
     }
 })
 </script>
