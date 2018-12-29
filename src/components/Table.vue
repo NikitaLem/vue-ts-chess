@@ -44,6 +44,7 @@
             :possible-turn="item.possibleTurn"
             :is-active="item.isActive"
             :is-white-turn="isWhiteTurn"
+            :player-side="playerSide"
             @figure-touched="prepareToTurn($event)"
             @figure-turned="endOfTurn($event)"
         ></square>
@@ -67,6 +68,13 @@ export default Vue.extend({
     name: 'Table',
     components: {
         'square': Square,
+    },
+
+    props: {
+        playerSide: {
+            type: String,
+            default: 'watcher',
+        },
     },
 
     data() {
@@ -303,6 +311,8 @@ export default Vue.extend({
 
             this.clearTableAfterTurn();
             this.isWhiteTurn = !this.isWhiteTurn;
+
+            socket.emit('postData', this.chessFieldModel);
         },
 
         clearTableAfterTurn(): void {
@@ -352,6 +362,7 @@ export default Vue.extend({
             this.allFieldsUnderWhiteAttack = this.getFieldsUnderAttack(1);
             this.allFieldsUnderBlackAttack.splice(0, this.allFieldsUnderBlackAttack.length);
             this.allFieldsUnderBlackAttack = this.getFieldsUnderAttack(-1);
+            socket.emit('promotion', this.chessFieldModel);
         },
 
         checkCastling(side: number, type: string): void {
@@ -375,8 +386,9 @@ export default Vue.extend({
     },
 
     mounted() {
-            socket.on('getData', (data: SquareInterface[]) => {
-                this.chessFieldModel = data;
+            socket.on('getData', (data: {data: SquareInterface[], activeSide: boolean}) => {
+                this.chessFieldModel = data.data;
+                this.isWhiteTurn = data.activeSide;
             });
     }
 })

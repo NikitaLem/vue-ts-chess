@@ -1,24 +1,47 @@
 <template>
-    <div style="height: 100%; width: 100%;">
-        <div class="table-chess-wrapper">
-            <table-chess></table-chess>
-            <button class="turn-around" type="button" @click="turnTableAround">Turn table around</button>
+    <div>
+        <div style="display: flex; justify-content: space-around; padding-top: 20px">
+            <aside class="game-info">
+                <select class="side-select" v-model="playerSide">
+                    <option value="white">White</option>
+                    <option value="black">Black</option>
+                    <option value="watcher">Watcher</option>
+                </select>
+            </aside>
+            <div class="table-chess-wrapper">
+                <table-chess
+                    :player-side="playerSide"
+                ></table-chess>
+            </div>
+            <aside class="table-control">
+                <button class="turn-around" type="button" @click="turnTableAround">Turn table around</button>
+                <label class="disco-mode-label" >Disco mode:
+                    <input v-model="discoMode" type="checkbox" class="disco-mode"/>
+                </label>
+            </aside>
         </div>
+        <little-chat class="app-chat"
+        
+        ></little-chat>
     </div>
 </template>
 <script lang="ts">
 import Vue from 'vue'
 import Table from "./components/Table.vue";
+import LittleChat from './components/LittleChat.vue';
 
 export default Vue.extend({
 
     components: {
         'table-chess': Table,
+        'little-chat': LittleChat,
     },
 
     data() {
         return {
             isWhiteSideOnFront: true as boolean,
+            playerSide: 'watcher' as String,
+            discoMode: false as boolean,
         };
     },
 
@@ -48,27 +71,35 @@ export default Vue.extend({
 <style>
     html {
         font-size: 62.5%;
-        height: 100%;
-        width: 100%;
     }
 
     body {
-        height: 100%;
-        width: 100%;
         margin: 0;
         padding: 0;
     }
 
     .table-chess-wrapper {
-        height: 100%;
-        width: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
-        flex-direction: column;
     }
 
     .turn-around {
         margin-top: 15px;
+    }
+
+    .app-chat {
+        margin: 20px auto 0;
+        max-width: 80%;
+    }
+
+    .table-control {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .disco-mode-label {
+        font-size: 1.6rem;
+        margin-top: 10px;
     }
 </style>
