@@ -1,7 +1,9 @@
+import SquareInterface from "../Interfaces/SquareInterface";
+
 const FIRST_COLOR: string = '#ffeece';
 const SECOND_COLOR: string = '#cf7249';
 
-const startingTable = [
+const startingTable: SquareInterface[] = [
     { figure: -6, squareColor: FIRST_COLOR, possibleTurn: false},
     { figure: -5, squareColor: SECOND_COLOR, possibleTurn: false},
     { figure: -4, squareColor: FIRST_COLOR, possibleTurn: false},

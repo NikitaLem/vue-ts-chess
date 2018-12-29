@@ -43,7 +43,12 @@ export default Vue.extend({
         playableSquare: {
             type: Boolean,
             default: true,
-        }
+        },
+
+        playerSide: {
+            type: String,
+            default: 'watcher',
+        },
     },
 
     computed: {
@@ -73,6 +78,8 @@ export default Vue.extend({
                 return;
             }
 
+            if (this.playerSide === 'watcher') return;
+
             if (event.target.closest('.possibleTurn')) {
                 this.$emit('figure-turned', this.numberOfField);
                 return;
@@ -81,6 +88,8 @@ export default Vue.extend({
             if (event.target.closest('.chess__empty')) return;
             if (this.isWhiteTurn && this.state < 0) return;
             if (!this.isWhiteTurn && this.state > 0) return;
+            if (this.isWhiteTurn && this.playerSide === 'black') return;
+            if (!this.isWhiteTurn && this.playerSide === 'white') return;
             
             this.$emit('figure-touched', this.numberOfField);
             return;
