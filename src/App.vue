@@ -29,6 +29,7 @@
 import Vue from 'vue'
 import Table from "./components/Table.vue";
 import LittleChat from './components/LittleChat.vue';
+import { setInterval } from 'timers';
 
 export default Vue.extend({
 
@@ -43,6 +44,16 @@ export default Vue.extend({
             playerSide: 'watcher' as String,
             discoMode: false as boolean,
         };
+    },
+    
+    watch: {
+        discoMode(status: boolean): void {
+            if (status) {
+                setInterval(() => {
+                    this.startDisco()
+                }, 50);
+            }
+        }
     },
 
     methods: {
@@ -64,6 +75,20 @@ export default Vue.extend({
                 this.isWhiteSideOnFront = !this.isWhiteSideOnFront;
             }
             
+        },
+
+        startDisco(): void {
+            const allSquares: Array<HTMLElement> = Array.from(document.querySelectorAll('.chess__square'));
+            const getRandom: (min: number, max: number) => number = function(min: number, max: number) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            };
+
+            let deg: number;
+
+            allSquares.forEach(item => {
+                deg = getRandom(0, 360);
+                item.style.filter = `hue-rotate(${deg}deg)`;
+            });
         }
     }
 })
