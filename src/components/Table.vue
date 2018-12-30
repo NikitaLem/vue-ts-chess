@@ -53,7 +53,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import Square from "./Square.vue";
-import SquareInterface from '../interfaces/SquareInterface';
+import SquareInterface from '../Interfaces/SquareInterface';
 import PawnApi from '../FiguresApi/Pawn';
 import KnightApi from '../FiguresApi/Knight';
 import BishopApi from '../FiguresApi/Bishop';
