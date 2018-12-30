@@ -29,7 +29,10 @@ export default Vue.extend({
 
     methods: {
         sendMessage(event: any): void {
-            if (this.currentMessage === '') return;
+            if (this.currentMessage === '') {
+                event.preventDefault();
+                return;
+            }
             socket.emit('newMessage', this.currentMessage);
             this.currentMessage = '';
             event.preventDefault();
