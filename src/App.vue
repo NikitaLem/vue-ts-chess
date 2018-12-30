@@ -7,6 +7,7 @@
                     <option value="black">Black</option>
                     <option value="watcher">Watcher</option>
                 </select>
+                <button type="button" class="restart-game" @click="restartGame">Restart</button>
             </aside>
             <div class="table-chess-wrapper">
                 <table-chess
@@ -30,6 +31,9 @@ import Vue from 'vue'
 import Table from "./components/Table.vue";
 import LittleChat from './components/LittleChat.vue';
 import { setInterval } from 'timers';
+import * as io from 'socket.io-client';
+
+const socket = io();
 
 export default Vue.extend({
 
@@ -41,17 +45,31 @@ export default Vue.extend({
     data() {
         return {
             isWhiteSideOnFront: true as boolean,
-            playerSide: 'watcher' as String,
+            playerSide: 'watcher' as string,
             discoMode: false as boolean,
+            discoTimer: 0 as number,
         };
+    },
+
+    computed: {
+        firstColor(): string | null {
+            return getComputedStyle(document.querySelectorAll('.chess__square')[0]).backgroundColor;
+        },
+
+        secondColor(): string | null {
+            return getComputedStyle(document.querySelectorAll('.chess__square')[1]).backgroundColor;
+        },
     },
     
     watch: {
         discoMode(status: boolean): void {
             if (status) {
-                setInterval(() => {
+                this.discoTimer = window.setInterval(() => {
                     this.startDisco()
                 }, 50);
+            } else {
+                window.clearInterval(this.discoTimer);
+                this.setDefaultColors(<string>this.firstColor, <string>this.secondColor);
             }
         }
     },
@@ -89,7 +107,19 @@ export default Vue.extend({
                 deg = getRandom(0, 360);
                 item.style.filter = `hue-rotate(${deg}deg)`;
             });
-        }
+        },
+
+        setDefaultColors(firstColor: string, secondColor: string): void {
+            const allSquares: Array<HTMLElement> = Array.from(document.querySelectorAll('.chess__square'));
+
+            allSquares.forEach(item => {
+                item.style.filter = 'hue-rotate(0deg)';
+            });
+        },
+
+        restartGame() {
+            socket.emit('restartGame');
+        },
     }
 })
 </script>
@@ -118,6 +148,11 @@ export default Vue.extend({
         max-width: 80%;
     }
 
+    .game-info {
+        display: flex;
+        flex-direction: column;
+    }
+
     .table-control {
         display: flex;
         flex-direction: column;
@@ -126,5 +161,9 @@ export default Vue.extend({
     .disco-mode-label {
         font-size: 1.6rem;
         margin-top: 10px;
+    }
+
+    .restart-game {
+        margin-top: 15px;
     }
 </style>

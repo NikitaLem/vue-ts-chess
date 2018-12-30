@@ -9,13 +9,11 @@ const io = require('socket.io')(http);
 
 let data: SquareInterface[] = startingTable;
 let isWhiteTurn: boolean = true;
-let allMessages: string[] = [];
 
 app.use(express.static(__dirname + '/dist'));
 
 io.on('connection', function(socket) {
   socket.emit('getData', {data: data, activeSide: isWhiteTurn});
-  socket.emit('addNewLine', allMessages);
 
   socket.on('postData', (newData: SquareInterface[]) => {
     data = newData;
@@ -29,9 +27,14 @@ io.on('connection', function(socket) {
   });
 
   socket.on('newMessage', function(msg: string) {
-    allMessages.push(msg);
-    io.sockets.emit('addNewLine', allMessages);
+    io.sockets.emit('addNewLine', msg);
+  });
+
+  socket.on('restartGame', function() {
+    data = startingTable;
+    isWhiteTurn = true;
+    io.sockets.emit('getData', {data: data, activeSide: isWhiteTurn});
   });
 });
 
-http.listen(3000);
+http.listen(3030);

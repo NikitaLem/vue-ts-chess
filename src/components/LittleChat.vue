@@ -37,8 +37,8 @@ export default Vue.extend({
     },
 
     mounted() {
-        socket.on('addNewLine', (msges: string[]) => {
-            this.allMessages = msges;
+        socket.on('addNewLine', (msg: string) => {
+            this.allMessages.push(msg);
         });
     }
     
@@ -58,6 +58,7 @@ export default Vue.extend({
         margin: 0;
         padding: 0;
         list-style: none;
+        overflow-y: scroll;
     }
 
     .chat-out li {

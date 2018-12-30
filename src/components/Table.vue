@@ -378,9 +378,9 @@ export default Vue.extend({
                 switch (type) {
                     default:
                     case 'short':
-                        if (this.chessFieldModel[4].figure !== -2 || this.chessFieldModel[0].figure !== -6) this.castling.isBlackLongCastlingEverPossible = false; break;
+                        if (this.chessFieldModel[4].figure !== -2 || this.chessFieldModel[0].figure !== -6) this.castling.isBlackShortCastlingEverPossible = false; break;
                     case 'long':
-                        if (this.chessFieldModel[4].figure !== -2 || this.chessFieldModel[7].figure !== -6) this.castling.isBlackShortCastlingEverPossible = false; break;
+                        if (this.chessFieldModel[4].figure !== -2 || this.chessFieldModel[7].figure !== -6) this.castling.isBlackLongCastlingEverPossible = false; break;
                 }
         }
     },
