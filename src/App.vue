@@ -1,29 +1,26 @@
 <template>
     <div>
-        <div style="display: flex; justify-content: space-around; padding-top: 20px">
-            <aside class="game-info">
-                <select class="side-select" v-model="playerSide">
-                    <option value="white">White</option>
-                    <option value="black">Black</option>
-                    <option value="watcher">Watcher</option>
-                </select>
-                <button type="button" class="restart-game" @click="restartGame">Restart</button>
-            </aside>
+        <header class="table-control">
+            <select class="side-select" v-model="playerSide">
+                <option value="white">White</option>
+                <option value="black">Black</option>
+                <option value="watcher">Watcher</option>
+            </select>
+            <button type="button" class="restart-game" @click="restartGame">Restart</button>
+            <button class="turn-around" type="button" @click="turnTableAround">Turn table around</button>
+            <label class="disco-mode-label">Disco mode:
+                <input v-model="discoMode" type="checkbox" class="disco-mode"/>
+            </label>
+        </header>
+        <div class="table-chat-wrapper">
             <div class="table-chess-wrapper">
                 <table-chess
                     :player-side="playerSide"
                 ></table-chess>
             </div>
-            <aside class="table-control">
-                <button class="turn-around" type="button" @click="turnTableAround">Turn table around</button>
-                <label class="disco-mode-label" >Disco mode:
-                    <input v-model="discoMode" type="checkbox" class="disco-mode"/>
-                </label>
-            </aside>
+            <little-chat class="app-chat"
+            ></little-chat>
         </div>
-        <little-chat class="app-chat"
-        
-        ></little-chat>
     </div>
 </template>
 <script lang="ts">
@@ -50,16 +47,6 @@ export default Vue.extend({
             discoTimer: 0 as number,
         };
     },
-
-    computed: {
-        firstColor(): string | null {
-            return getComputedStyle(document.querySelectorAll('.chess__square')[0]).backgroundColor;
-        },
-
-        secondColor(): string | null {
-            return getComputedStyle(document.querySelectorAll('.chess__square')[1]).backgroundColor;
-        },
-    },
     
     watch: {
         discoMode(status: boolean): void {
@@ -69,7 +56,7 @@ export default Vue.extend({
                 }, 50);
             } else {
                 window.clearInterval(this.discoTimer);
-                this.setDefaultColors(<string>this.firstColor, <string>this.secondColor);
+                this.setDefaultColors();
             }
         }
     },
@@ -109,7 +96,7 @@ export default Vue.extend({
             });
         },
 
-        setDefaultColors(firstColor: string, secondColor: string): void {
+        setDefaultColors(): void {
             const allSquares: Array<HTMLElement> = Array.from(document.querySelectorAll('.chess__square'));
 
             allSquares.forEach(item => {
@@ -133,29 +120,32 @@ export default Vue.extend({
         padding: 0;
     }
 
+    .table-chat-wrapper {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    @media screen and (max-width: 480px) {
+        .table-chat-wrapper {
+            display: flex;
+            justify-content: space-between;
+            flex-direction: column;
+        }
+    }
+
+    .table-control {
+        padding: 20px 0;
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+    }
+
     .table-chess-wrapper {
         display: flex;
         justify-content: center;
         align-items: center;
-    }
-
-    .turn-around {
-        margin-top: 15px;
-    }
-
-    .app-chat {
-        margin: 20px auto 0;
-        max-width: 80%;
-    }
-
-    .game-info {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .table-control {
-        display: flex;
-        flex-direction: column;
+        flex-basis: 75%;
+        flex-grow: 1;
     }
 
     .disco-mode-label {
@@ -163,7 +153,8 @@ export default Vue.extend({
         margin-top: 10px;
     }
 
-    .restart-game {
-        margin-top: 15px;
+    .app-chat {
+        min-height: calc(100% - 40px);
+        max-height: 580px;
     }
 </style>
