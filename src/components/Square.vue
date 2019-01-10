@@ -102,8 +102,8 @@ export default Vue.extend({
 .chess__square {
     position: relative;
     box-sizing: border-box;
-    width: 70px;
-    height: 70px;
+    width: calc(100% / 8);
+    height: calc(100% / 8);
     background-size: contain;
     background-repeat: no-repeat;
     background-position: 50% 50%;

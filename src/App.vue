@@ -27,7 +27,7 @@
 import Vue from 'vue'
 import Table from "./components/Table.vue";
 import LittleChat from './components/LittleChat.vue';
-import { setInterval } from 'timers';
+import { setInterval, setTimeout } from 'timers';
 import * as io from 'socket.io-client';
 
 const socket = io();
@@ -108,24 +108,53 @@ export default Vue.extend({
             socket.emit('restartGame');
         },
     }
-})
+});
+
+const setChatHeight = function(): void {
+    const littleChat = <HTMLElement>document.querySelector('.little-chat');
+    const chatOut: HTMLElement = <HTMLElement>document.querySelector('.chat-out');
+    
+    if (window.innerWidth > 1000) {
+        littleChat.style.height = '';
+        chatOut.style.maxHeight = '';
+        return;
+    }
+
+    const chessTable: HTMLElement = <HTMLElement>document.querySelector('.table-chess-wrapper');
+    const chatIn: HTMLElement = <HTMLElement>document.querySelector('.chat-in');
+    let chatHeight: number = document.body.offsetHeight - chessTable.getBoundingClientRect().bottom;
+    littleChat.style.height = chatHeight + 'px';
+    let maxHeight: number = chatIn.getBoundingClientRect().top - chessTable.getBoundingClientRect().bottom;
+    chatOut.style.maxHeight = maxHeight + 'px';
+};
+
+window.addEventListener('load', () => {
+    setTimeout(() => { setChatHeight() }, 20)}, false);
+
+window.addEventListener('resize', () => {
+    setTimeout(() => { setChatHeight() }, 20)}, false);
 </script>
 <style>
     html {
         font-size: 62.5%;
+        height: 100vh;
+        width: 100vw;
     }
 
     body {
         margin: 0;
         padding: 0;
+        height: 100vh;
+        width: 100vw;
     }
 
     .table-chat-wrapper {
         display: flex;
         justify-content: space-between;
+        height: 100%;
     }
 
-    @media screen and (max-width: 480px) {
+    @media screen and (max-width: 1000px) {
         .table-chat-wrapper {
             display: flex;
             justify-content: space-between;
@@ -134,7 +163,7 @@ export default Vue.extend({
     }
 
     .table-control {
-        padding: 20px 0;
+        padding: 10px 0;
         display: flex;
         justify-content: space-around;
         flex-wrap: wrap;

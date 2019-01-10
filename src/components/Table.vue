@@ -391,13 +391,27 @@ export default Vue.extend({
                 this.isWhiteTurn = data.activeSide;
             });
     }
-})
+});
+
+const setTableHeight = function(): void {
+    const chessTable: HTMLElement | null = document.querySelector('.chess-table');
+    if (chessTable) {
+        chessTable.style.height = chessTable.clientWidth + 'px';
+    }
+};
+
+window.addEventListener('load', () => {
+    setTimeout(() => { setTableHeight() }, 10)}, false);
+
+window.addEventListener('resize', () => {
+    setTimeout(() => { setTableHeight() }, 10)}, false);
 </script>
 <style>
 .chess-table {
     position: relative;
-    width: calc(8 * 70px);
-    height: calc(8 * 70px);
+    max-width: 560px;
+    max-height: 560px;
+    width: 100%;
     display: flex;
     flex-wrap: wrap;
     border: 10px solid #49290c
