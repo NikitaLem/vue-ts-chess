@@ -9,7 +9,7 @@
             <button type="button" class="restart-game" @click="restartGame">Restart</button>
             <button class="turn-around" type="button" @click="turnTableAround">Turn table around</button>
             <label class="disco-mode-label">Disco mode:
-                <input v-model="discoMode" type="checkbox" class="disco-mode"/>
+                <input v-model="discoMode" type="checkbox" class="disco-mode" style="vertical-align: middle"/>
             </label>
         </header>
         <div class="table-chat-wrapper">
@@ -142,6 +142,7 @@ window.addEventListener('resize', () => {
     }
 
     body {
+        font-family: Arial, Helvetica, sans-serif;
         margin: 0;
         padding: 0;
         height: 100vh;
@@ -185,5 +186,13 @@ window.addEventListener('resize', () => {
     .app-chat {
         min-height: calc(100% - 40px);
         max-height: 580px;
+        padding-right: 20px;
+
+    }
+
+    @media screen and (max-width: 1000px) {
+        .app-chat {
+            padding-right: 0;
+        }
     }
 </style>

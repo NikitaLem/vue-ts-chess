@@ -48,6 +48,16 @@
             @figure-touched="prepareToTurn($event)"
             @figure-turned="endOfTurn($event)"
         ></square>
+        <div class="letters">
+            <span class="letter">A</span>
+            <span class="letter">B</span>
+            <span class="letter">C</span>
+            <span class="letter">D</span>
+            <span class="letter">E</span>
+            <span class="letter">F</span>
+            <span class="letter">G</span>
+            <span class="letter">H</span>
+        </div>
     </div>
 </template>
 <script lang="ts">
@@ -406,7 +416,7 @@ window.addEventListener('load', () => {
 window.addEventListener('resize', () => {
     setTimeout(() => { setTableHeight() }, 10)}, false);
 </script>
-<style>
+<style scoped>
 .chess-table {
     position: relative;
     max-width: 560px;
@@ -414,7 +424,7 @@ window.addEventListener('resize', () => {
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    border: 10px solid #49290c
+    border: 15px solid #49290c
 }
 
 .super-pawn-menu_white {
@@ -449,5 +459,14 @@ window.addEventListener('resize', () => {
     left: 0;
     z-index: 100;
     background-color: #3333338c;
+}
+
+.letters {
+    height: 15px;
+    width: 100%;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
 }
 </style>

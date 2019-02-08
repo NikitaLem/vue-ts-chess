@@ -78,6 +78,7 @@ export default Vue.extend({
     }
 
     .chat-out {
+        background-color: #ffffff;
         box-sizing: border-box;
         border: 2px solid #444444;
         width: 100%;
