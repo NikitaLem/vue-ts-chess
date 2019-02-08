@@ -65,17 +65,24 @@ export default Vue.extend({
         turnTableAround(): void {
             const chessTable: HTMLElement = <HTMLElement>document.querySelector('.chess-table');
             const allSquares: Array<HTMLElement> = Array.from(document.querySelectorAll('.chess__square')) as Array<HTMLElement>;
+            const letters: Array<HTMLElement> = Array.from(document.querySelectorAll('.letter')) as Array<HTMLElement>;
 
             if (this.isWhiteSideOnFront) {
                 if (chessTable) chessTable.style.transform = 'rotate(180deg)';
-                if (allSquares.length !== 0) Array.from(allSquares).forEach(element => {
+                if (allSquares.length !== 0) allSquares.forEach(element => {
                     element.style.transform = 'rotate(180deg)';
+                });
+                if (letters) letters.forEach(letter => {
+                    letter.style.transform = 'rotate(180deg)';
                 });
                 this.isWhiteSideOnFront = !this.isWhiteSideOnFront;
             } else {
                 if (chessTable) chessTable.style.transform = 'rotate(0deg)';
                 if (allSquares.length !== 0) allSquares.forEach(element => {
                     element.style.transform = 'rotate(0deg)';
+                });
+                if (letters) letters.forEach(letter => {
+                    letter.style.transform = 'rotate(0deg)';
                 });
                 this.isWhiteSideOnFront = !this.isWhiteSideOnFront;
             }
