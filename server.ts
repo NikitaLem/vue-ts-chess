@@ -37,4 +37,6 @@ io.on('connection', function(socket) {
   });
 });
 
-http.listen(3030);
+http.listen(3030, () => {
+  console.log('Worked!');
+});
